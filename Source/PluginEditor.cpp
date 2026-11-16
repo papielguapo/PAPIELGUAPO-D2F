@@ -130,7 +130,7 @@ D2FFaceplate::D2FFaceplate(Phobos67Processor& processor):p(processor){
  const char* fids[]{"airFreq","subFreq"};
  for(size_t i=0;i<2;i++){auto& f=frequencies[i];controlsLayer.addAndMakeVisible(f);f.setName(fids[i]);f.setTooltip(i==0?"Air outer ring: 20 / 30 / 40 / 50 kHz":"Sub outer ring: 40 / 50 / 60 / 100 Hz");f.getProperties().set("frequencyRing",true);f.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);f.setTextBoxStyle(juce::Slider::NoTextBox,false,0,0);f.setRotaryParameters(juce::MathConstants<float>::pi*7/6,juce::MathConstants<float>::pi*17/6,true);f.setMouseDragSensitivity(140);frequencyAttachments[i]=std::make_unique<SA>(p.state,fids[i],f);f.toBack();knobs[i+3].getProperties().set("concentric",true);knobs[i+3].resized();knobs[i+3].setTooltip(i==0?"Air inner knob: gain; outer ring: frequency":"Sub inner knob: gain; outer ring: frequency");}
  const char* bids[]{"power","fobosOn","inflateOn","clip","bandSplit","reverseOrder","mono","delta"};
- const char* btips[]{"Power: latency-aligned bypass","Meter IN / OUT: signal after Input gain or final output","Lower L/R meter: K-12 / K-14 RMS. Upper meter always shows dBFS peaks","Clip waveshaper input and final output at 0 dBFS, after Output gain","Inflator Band Split: OFF / ON","Order A: Color then Inflate; B: Inflate then Color. Input first; Output and final Clip last","Mono / Stereo: mono sums L and R equally at the output","Delta: hear processed minus latency-aligned original input"};
+ const char* btips[]{"Power: latency-aligned bypass","Meter IN / OUT: signal after Input gain or final output","Lower L/R meter: K-12 / K-14 RMS. Upper meter always shows dBFS peaks","Hard Clip: final output ceiling at 0 dBFS after Output gain; no input pre-clipping or soft saturation","Inflator Band Split: OFF / ON","Order A: Color then Inflate; B: Inflate then Color. Input first; Output and final Clip last","Mono / Stereo: mono sums L and R equally at the output","Delta: hear processed minus latency-aligned original input"};
  for(size_t i=0;i<8;i++){controlsLayer.addAndMakeVisible(buttons[i]);buttons[i].setName(bids[i]);buttons[i].setTooltip(btips[i]);buttons[i].setClickingTogglesState(true);ba[i]=std::make_unique<BA>(p.state,bids[i],buttons[i]);}
  for(int index:{1,2,5,6,8,9}){knobs[(size_t)index].getProperties().set("smallStack",true);knobs[(size_t)index].resized();}
  buttons[2].getProperties().set("reverse",true);buttons[4].getProperties().set("reverse",true);buttons[7].getProperties().set("reverse",true);buttons[3].getProperties().set("clipCompact",true);buttons[3].getProperties().set("miniLed",true);buttons[6].getProperties().set("reverse",true);buttons[0].getProperties().set("reverse",true);buttons[3].getProperties().set("reverse",true);knobs[0].setTooltip("Ganancia de entrada antes de las dos etapas");knobs[1].setTooltip("Armonicos pares");knobs[2].setTooltip("Armonicos impares");knobs[5].setTooltip("Cantidad de inflado: 0 a 100 por ciento");knobs[6].setTooltip("Curva de inflado: -50 a +50");knobs[7].setTooltip("Ganancia final despues de ambas etapas; sin auto gain");knobs[8].setTooltip("Mid gain before tone filters");knobs[9].setTooltip("Side gain before tone filters");startTimerHz(30);
@@ -142,7 +142,7 @@ void D2FFaceplate::resized(){
  knobs[1].setBounds(300,65,103,56);knobs[2].setBounds(300,147,103,56);
  knobs[8].setBounds(1332,65,103,56);knobs[9].setBounds(1332,147,103,56);knobs[5].setBounds(1212,65,103,56);knobs[6].setBounds(1212,147,103,56);
  for(int i=0;i<2;i++){int cx=knobCentres[i+3];frequencies[(size_t)i].setBounds(cx-50,76,100,100);knobs[(size_t)(i+3)].setBounds(cx-42,84,84,154);}
- buttons[0].setBounds(84,137,50,36);buttons[2].setBounds(408,58,60,32);buttons[1].setBounds(408,119,60,32);buttons[7].setBounds(408,180,60,32);buttons[6].setBounds(808,58,60,32);buttons[4].setBounds(808,119,60,32);buttons[5].setBounds(808,180,60,32);buttons[3].setBounds(1568,112,76,24);
+ buttons[0].setBounds(84,137,50,36);buttons[1].setBounds(408,58,60,32);buttons[2].setBounds(408,119,60,32);buttons[7].setBounds(408,180,60,32);buttons[6].setBounds(808,58,60,32);buttons[4].setBounds(808,119,60,32);buttons[5].setBounds(808,180,60,32);buttons[3].setBounds(1568,112,76,24);
 }
 void D2FFaceplate::paint(juce::Graphics& g){
  g.fillAll(colour(0xff090a0d));juce::Rectangle<float> plate(5,5,1624,242);
@@ -182,7 +182,7 @@ void D2FFaceplate::paint(juce::Graphics& g){
   }
  }
  g.setColour(colour(0xff292330));
- const char* leftTitles[]{"K-12 / K-14","METER IN / OUT","DELTA"};const char* rightTitles[]{"MONO / STEREO","BAND SPLIT","PROCESS ORDER"};
+ const char* leftTitles[]{"METER IN / OUT","K-12 / K-14","DELTA"};const char* rightTitles[]{"MONO / STEREO","BAND SPLIT","PROCESS ORDER"};
  for(int i=0;i<3;i++){text(g,leftTitles[i],388,39.f+i*61,100,18,9);text(g,rightTitles[i],790,39.f+i*61,100,18,9);}
  g.setColour(colour(0xff59515f));text(g,"ON / OFF",393,222,100,14,9,false);text(g,"A / B",790,222,100,14,10,false);text(g,"ON / OFF",790,151,100,10,8,false);
     // Hand-drawn vector script, independent of installed fonts.

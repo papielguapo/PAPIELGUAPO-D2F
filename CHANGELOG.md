@@ -1,5 +1,11 @@
 # Cambios
 
+## v0.2.0-rc8
+
+- Clip duro exclusivamente al final, después de Output: sin recorte previo en Inflate ni saturación suave adicional. Conserva exactamente las muestras bajo el techo.
+- IN/OUT ocupa el primer interruptor junto al medidor; K-12/K-14 queda debajo.
+- Prueba de regresión en ambos órdenes, Band Split, Mono y dos frecuencias de muestreo: Clip ON equivale exactamente al recorte final de Clip OFF.
+
 ## v0.2.0-rc7
 
 - Mayor precisión numérica en el procesamiento multibanda y en el orden B.

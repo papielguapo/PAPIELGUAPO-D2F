@@ -16,6 +16,14 @@ inline int run(){int pass=0,fail=0;auto test=[&](const char* name,std::function<
    for(int n=0;n<12;n++){set(p,"airFreq",n%4);set(p,"subFreq",(n+1)%4);signal(b,n*b.getNumSamples(),4,sr);p.processBlock(b,m);for(int ch=0;ch<channels;ch++)for(int j=0;j<b.getNumSamples();j++){float x=b.getSample(ch,j);require(std::isfinite(x),"Nonfinite Clip output");require(std::abs(x)<=1.f,"Sample exceeded 0 dBFS after Output");if(std::abs(x)==1)clipped++;}}
   }require(clipped>100,"Ceiling test never exercised clipping");std::cout<<"  Ceiling-hit samples="<<clipped<<"\n";
  });
+ test("Clean hard Clip: bit-identical below ceiling; exact final clamp in both orders, split and mono",[]{
+  int below=0,over=0;
+  for(double sr:{44100.,192000.})for(int mode=0;mode<8;mode++)for(float output:{-12.f,18.f}){
+   Phobos67Processor a,b;for(auto* p:{&a,&b}){set(*p,"input",12);set(*p,"output",output);set(*p,"even",17);set(*p,"odd",28);set(*p,"effect",73);set(*p,"curve",13);set(*p,"reverseOrder",mode&1);set(*p,"bandSplit",(mode>>1)&1);set(*p,"mono",(mode>>2)&1);p->prepareToPlay(sr,128);}set(a,"clip",0);set(b,"clip",1);
+   juce::AudioBuffer<float>x(2,128),y(2,128);juce::MidiBuffer midi;
+   for(int n=0;n<128;n++){signal(x,n*128,1.5f,sr);y.makeCopyOf(x);a.processBlock(x,midi);b.processBlock(y,midi);for(int ch=0;ch<2;ch++)for(int j=0;j<128;j++){float dry=x.getSample(ch,j),wet=y.getSample(ch,j);require(wet==juce::jlimit(-1.f,1.f,dry),"Clip changed a sample beyond the final hard ceiling");if(std::abs(dry)>1)over++;else below++;}}
+  }require(below>100&&over>100,"Clean Clip test did not exercise both regions");
+ });
  test("Clip OFF permits signal above 0 dBFS; no hidden auto output",[]{Phobos67Processor p;set(p,"clip",0);set(p,"output",24);p.prepareToPlay(48000,128);auto out=render(p);float peak=0;for(float x:out)peak=juce::jmax(peak,std::abs(x));require(peak>2,"Clip OFF still limits output");});
  test("Power and host bypass: exact 38-sample delay, stereo, variable block sizes",[]{Phobos67Processor a,b;set(a,"power",0);set(a,"input",24);set(a,"output",24);a.prepareToPlay(48000,128);b.prepareToPlay(48000,128);require(a.getLatencySamples()==38,"Unexpected latency");std::vector<std::vector<float>> input(2);juce::MidiBuffer m;int offset=0;
   for(int n:{1,17,256,9,513,128,64,1024}){juce::AudioBuffer<float> x(2,n),y(2,n);signal(x,offset,2);for(int ch=0;ch<2;ch++)for(int j=0;j<n;j++)input[ch].push_back(x.getSample(ch,j));y.makeCopyOf(x);a.processBlock(x,m);b.processBlockBypassed(y,m);for(int ch=0;ch<2;ch++)for(int j=0;j<n;j++){float expected=offset+j<38?0:input[ch][offset+j-38];require(x.getSample(ch,j)==expected,"Power bypass changed sample");require(y.getSample(ch,j)==expected,"Host bypass changed sample");}offset+=n;}

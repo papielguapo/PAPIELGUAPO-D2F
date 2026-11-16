@@ -1,6 +1,7 @@
 PASS Inflator anti-denormal: nonzero rounding preserved; exact zero alternates
-  Ceiling-hit samples=214217
+  Ceiling-hit samples=12050
 PASS Final Clip: 40 rate/channel/block combinations; Input/Output max; active automation
+PASS Clean hard Clip: bit-identical below ceiling; exact final clamp in both orders, split and mono
 PASS Clip OFF permits signal above 0 dBFS; no hidden auto output
 PASS Power and host bypass: exact 38-sample delay, stereo, variable block sizes
 PASS Host bypass meters follow audio instead of freezing
@@ -13,7 +14,7 @@ PASS Stereo meters: independent L/R peaks and RMS, K-14 zero reference
 PASS Band Split and Order change audio; Clip holds in all monitor/stage combinations
 PASS Full state round-trip and restored audio; malformed state rejected
 PASS Automation fuzz: all controls, 44.1/192 kHz, Clip ceiling and finite output
-  allocations=0; elapsed including signal generation=123.669 ms; audio duration=5333.33 ms
+  allocations=0; elapsed including signal generation=110.231 ms; audio duration=5333.33 ms
 PASS No C++ heap allocation inside processBlock during parameter automation; timing
 PASS Stereo isolation: one active channel does not leak into the silent channel
-FUNCTIONAL AUDIT: 16 groups passed, 0 failed
+FUNCTIONAL AUDIT: 17 groups passed, 0 failed

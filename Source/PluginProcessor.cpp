@@ -94,7 +94,7 @@ void Phobos67Processor::processBlock(juce::AudioBuffer<float>& b,juce::MidiBuffe
   for(int j=0;j<n;j++){
    const float gain=smoothed[0].getNextValue(),tmcInputStart=fobosInputStart.getNextValue();control.setSample(3,j,gain);control.setSample(2,j,smoothed[7].getNextValue());control.setSample(1,j,fobosOutputStart.getNextValue());
    inflateControl.setSample(0,j,effectCurrent);inflateControl.setSample(1,j,curveCurrent);effectCurrent+=(targets[5]-effectCurrent)*nativeAlpha;curveCurrent+=(targets[6]-curveCurrent)*nativeAlpha;
-   for(int ch=0;ch<2;ch++){float x=scratch.getSample(ch,j)*gain;if(reverse)x=processInflator(x,inflateControl.getSample(1,j),inflateControl.getSample(0,j),clip,ch,split);x*=tmcInputStart;scratch.setSample(ch,j,x);}
+   for(int ch=0;ch<2;ch++){float x=scratch.getSample(ch,j)*gain;if(reverse)x=processInflator(x,inflateControl.getSample(1,j),inflateControl.getSample(0,j),false,ch,split);x*=tmcInputStart;scratch.setSample(ch,j,x);}
   }
   juce::dsp::AudioBlock<float> block(scratch);auto up=os->processSamplesUp(block);
   for(size_t j=0;j<up.getNumSamples();j++){
@@ -109,7 +109,7 @@ void Phobos67Processor::processBlock(juce::AudioBuffer<float>& b,juce::MidiBuffe
    float processed[2]{},original[2]{};double inEnergy=0,outEnergy=0;
    for(int ch=0;ch<2;ch++){
     const int channel=juce::jmin(ch,b.getNumChannels()-1);original[ch]=dry.getSample(channel,j);const float input=original[ch]*control.getSample(3,j);inPeaks[ch]=juce::jmax(inPeaks[ch],std::abs(input));inputMeterLR[ch]+=detectorAlpha*((double)input*input-inputMeterLR[ch]);if(ch<b.getNumChannels())inEnergy+=(double)input*input;
-    float x=scratch.getSample(ch,j)*control.getSample(1,j);if(!reverse)x=processInflator(x,inflateControl.getSample(1,j),inflateControl.getSample(0,j),clip,ch,split);processed[ch]=x*control.getSample(2,j);
+    float x=scratch.getSample(ch,j)*control.getSample(1,j);if(!reverse)x=processInflator(x,inflateControl.getSample(1,j),inflateControl.getSample(0,j),false,ch,split);processed[ch]=x*control.getSample(2,j);
    }
    if(mono&&power){processed[0]=processed[1]=(processed[0]+processed[1])*.5f;original[0]=original[1]=(original[0]+original[1])*.5f;}
    for(int ch=0;ch<2;ch++){float wet=processed[ch];if(power&&clip)wet=juce::jlimit(-1.f,1.f,wet);float x=power?(delta?wet-original[ch]:wet):dry.getSample(juce::jmin(ch,b.getNumChannels()-1),j);if(power&&clip)x=juce::jlimit(-1.f,1.f,x);outPeaks[ch]=juce::jmax(outPeaks[ch],std::abs(x));outputMeterLR[ch]+=detectorAlpha*((double)x*x-outputMeterLR[ch]);if(ch<b.getNumChannels()){b.setSample(ch,offset+j,x);outEnergy+=(double)x*x;}}

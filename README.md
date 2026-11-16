@@ -44,9 +44,11 @@ Los aros de Air/Sub son selectores de frecuencia independientes del knob central
 | **Inflate** — Effect | Mezcla la cantidad de waveshaping con la señal de esa etapa. | 0 a 100 %. Mando superior. |
 | **Curve** | Modifica el carácter y la distribución del inflado. Su efecto depende del nivel y del contenido del audio. | −50 a +50. Mando inferior. |
 | **Output Gain** | Ajusta la ganancia final después de las dos etapas, independientemente del orden A/B. | −24 a +24 dB. Doble clic: 0 dB. |
-| **Clip** | Activa el recorte de entrada de la etapa Inflator y el techo final de salida a ±1. | Interruptor **ON / OFF**, con LED violeta. El LED indica que la función está activada. |
+| **Clip** | Recorta únicamente la salida que supera ±1, después de Output. Sin recorte previo ni saturación suave añadida. | Interruptor **ON / OFF**, con LED violeta. El LED indica que la función está activada. |
 
-**Effect a 0 %** elimina la contribución del waveshaping, pero no desactiva Color ni el comportamiento de Clip/rango interno de la etapa Inflator. No equivale al bypass completo del plugin.
+**Effect a 0 %** elimina la contribución del waveshaping, pero no desactiva Color ni la protección de rango interno de la etapa Inflate. No equivale al bypass completo del plugin.
+
+**Clip es duro:** conserva exactamente las muestras entre −1 y +1, y fija en −1/+1 las que exceden el techo. El recorte genera distorsión en los picos que elimina; no añade un modo de saturación ni suaviza la curva. Delta permite escuchar también la diferencia del recorte y mantiene su propio techo de monitorización.
 
 Con **Power activo y Clip ON**, ninguna muestra de salida supera 0 dBFS, también con Output al máximo, Mono o Delta. Es un techo **por muestras**, no un limitador true peak: no garantiza que los picos reconstruidos entre muestras queden por debajo de 0 dBTP.
 
