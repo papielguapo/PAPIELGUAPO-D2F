@@ -1,0 +1,1 @@
+PASS centred inside screw rectangle; switches and stereo rack layout; concentric frequencies and gain; resize; reopen at minimum 817x126

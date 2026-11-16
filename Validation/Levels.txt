@@ -1,0 +1,1 @@
+PASS 54 manual input/output level cases; no auto gain; meter switches leave audio bit-identical; final Output follows waveshaper. Trim error=1.4983e-08
